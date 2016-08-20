@@ -1,0 +1,69 @@
+﻿@model IEnumerable<ProyectoFacturas.Core.Modelos.Cliente>
+
+@{
+    ViewBag.Title = "Listado de Clientes";
+}
+
+<h2>@ViewBag.Title</h2>
+<p>En esta opción se listan todos los clientes registrados en el sistema.</p>
+
+<div class="row" style="padding-bottom: 5px">
+    <div class="col-md-6 col-md-offset-6 text-right">
+
+        @using (Html.BeginForm("Index", "Clientes", FormMethod.Get,
+            new { @class = "form-inline" }))
+        {
+            <div>
+                <input type="text" name="q" class="form-control input-sm"
+                       placeholder="Digite el nombre o la cedula..." />
+                <button type="submit" class="btn btn-primary btn-sm">Buscar</button>
+            </div>
+        }
+
+    </div>
+</div>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Identificacion)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Nombre)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ExentoImpuesto)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FechaRegistro)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Identificacion)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Nombre)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ExentoImpuesto)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FechaRegistro)
+            </td>
+            <td>
+                @Html.ActionLink("Editar", "Edit", new { id = item.Identificacion }) |
+                @Html.ActionLink("Detalles", "Details", new { id = item.Identificacion }) |
+                @Html.ActionLink("Eliminar", "Delete", new { id = item.Identificacion })
+            </td>
+        </tr>
+    }
+
+</table>
+
+<p class="text-center">
+    @Html.ActionLink("Crear Nuevo Cliente", "Create", null, new { @class = "btn btn-primary" })
+</p>
