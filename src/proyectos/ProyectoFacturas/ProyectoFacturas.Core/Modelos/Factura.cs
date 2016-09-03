@@ -16,7 +16,7 @@ namespace ProyectoFacturas.Core.Modelos
 
         [Required]
         [MaxLength(20)]
-        [Display(Name = "Identificación del Cliente")]
+        [Display(Name = "Cliente")]
         public string Identificacion { get; set; }
 
         [Required]
@@ -26,6 +26,7 @@ namespace ProyectoFacturas.Core.Modelos
         [MaxLength(300)]
         public string Detalles { get; set; }
         
+        [Range(1, 100000000)]
         public decimal Monto { get; set; }
 
         [Display(Name = "Porcentaje de Impuesto")]
@@ -34,10 +35,30 @@ namespace ProyectoFacturas.Core.Modelos
         [Display(Name = "Exenta de Impuesto?")]
         public bool ExentaImpuesto { get; set; }
 
-        [Display(Name = "Fecha de Emision")]
+        [Display(Name = "Fecha de Emisión")]
         public DateTime FechaEmision { get; set; }
 
         [ForeignKey("Identificacion")]
         public virtual Cliente Cliente { get; set; }
+
+        [NotMapped]
+        [Display(Name = "Núm. de Factura")]
+        public string IdFormato
+        {
+            get
+            {
+                return Id.ToString("000000");
+            }
+        }
+
+        [NotMapped]
+        [Display(Name = "Monto Total")]
+        public decimal MontoTotal
+        {
+            get
+            {
+                return Monto + (Monto * PorcentajeImpuesto / 100);
+            }
+        }
     }
 }

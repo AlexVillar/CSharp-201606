@@ -1,23 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Web.Mvc;
 using ProyectoFacturas.Core.Modelos;
 using ProyectoFacturas.DataAccess.Repositorios;
 
 namespace ProyectoFacturas.Controllers
 {
-    public class FacturasController : Controller
+    public class FacturasController : BaseController
     {
-        private readonly RepositorioFacturas _facturas;
-
-        public FacturasController()
-        {
-            _facturas = new RepositorioFacturas();
-        }
-
         // GET: Facturas
-        public ActionResult Index()
+        public ActionResult Index(string q)
         {
-            var facturas = _facturas.BuscarTodos();
+            List<Factura> facturas;
+
+            if (string.IsNullOrEmpty(q))
+                facturas = _facturas.BuscarTodos();
+            else
+                facturas = _facturas.BuscarPorNombreCliente(q);
 
             return View(facturas);
         }
@@ -42,6 +42,8 @@ namespace ProyectoFacturas.Controllers
             factura.ExentaImpuesto = false;
             factura.FechaEmision = DateTime.Now;
 
+            CargarListasCreateEdit();
+
             return View(factura);
         }
 
@@ -51,6 +53,10 @@ namespace ProyectoFacturas.Controllers
         {
             try
             {
+                if (!_clientes.ValidarClienteExiste(factura.Identificacion))
+                    ModelState.AddModelError("Identificacion",
+                        "No existe un cliente con la identificación especificada");
+
                 if (ModelState.IsValid)
                 {
                     _facturas.Registrar(factura);
@@ -64,6 +70,8 @@ namespace ProyectoFacturas.Controllers
                 ModelState.AddModelError("", ex.Message);
             }
 
+            CargarListasCreateEdit();
+
             return View(factura);
         }
 
@@ -74,6 +82,8 @@ namespace ProyectoFacturas.Controllers
 
             if (factura == null)
                 return RedirectToAction("Index");
+
+            CargarListasCreateEdit();
 
             return View(factura);
         }
@@ -99,6 +109,8 @@ namespace ProyectoFacturas.Controllers
                 ModelState.AddModelError("", ex.Message);
             }
 
+            CargarListasCreateEdit();
+
             return View(factura);
         }
 
@@ -114,6 +126,16 @@ namespace ProyectoFacturas.Controllers
             }
             
             return RedirectToAction("Index");
+        }
+
+        private void CargarListasCreateEdit()
+        {
+            ViewBag.Identificacion = _clientes.BuscarTodos()
+                .Select(c => new SelectListItem()
+                {
+                    Value = c.Identificacion,
+                    Text = c.Nombre
+                });
         }
     }
 }
